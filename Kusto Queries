@@ -289,11 +289,16 @@ Covid19
 | order by Active desc
 
 
-// Question 3 -- Country of countries in the dataset
+// Question 3 -- Count of countries in the dataset
 Covid19
 | summarize CountryCount= count(Country) by Country
 
+Covid19
+| summarize No_of_countries= dcount(Country)  // distinct count of countries
+
 
 // Question 4
+Covid19
+| distinct Country
 
 
