@@ -50,7 +50,12 @@ StormEvents
 |limit 10000
 
 StormEvents
-| summarize DamageProp=sum(DamageProperty) by State
+| summarize DamageProp=sum(DamageProperty),Crops=sum(DamageCrops) by State
+
+
+//  Grooup by State and Show the sum of Damage Properties and Eventid
+StormEvents
+| summarize DamageProp=sum(DamageProperty),Crops=sum(DamageCrops), count_Instances=count() by State
 
 
 
