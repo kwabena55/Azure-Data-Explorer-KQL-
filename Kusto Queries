@@ -57,5 +57,11 @@ StormEvents
 StormEvents
 | summarize DamageProp=sum(DamageProperty),Crops=sum(DamageCrops), count_Instances=count() by State
 
+StormEvents
+| summarize DamageProp=sum(DamageProperty),Crops=sum(DamageCrops), count_Instances=count() by State
+| where count_Instances >=2000 
 
+StormEvents
+| summarize DamageProp=sum(DamageProperty),Crops=sum(DamageCrops), count_Instances=count() by State
+|where count_Instances <2000
 
