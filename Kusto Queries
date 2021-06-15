@@ -68,3 +68,9 @@ StormEvents
 // Calculated Column
 StormEvents
 | summarize DamageProp=sum(DamageProperty), DamageProp_ratio= sum(DamageProperty)/count() by State
+
+
+// Group by Date
+StormEvents
+|summarize DamageProp=sum(DamageProperty), DamageProp_ratio= sum(DamageProperty)/count() by month=monthofyear(StartTime)
+| order by month asc 
