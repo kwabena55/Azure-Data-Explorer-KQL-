@@ -65,3 +65,6 @@ StormEvents
 | summarize DamageProp=sum(DamageProperty),Crops=sum(DamageCrops), count_Instances=count() by State
 |where count_Instances <2000
 
+// Calculated Column
+StormEvents
+| summarize DamageProp=sum(DamageProperty), DamageProp_ratio= sum(DamageProperty)/count() by State
