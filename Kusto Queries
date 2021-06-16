@@ -77,3 +77,6 @@ StormEvents
 
 
 // Group by Year
+StormEvents
+|summarize DamageProp=sum(DamageProperty), DamageProp_ratio= sum(DamageProperty)/count() by year=getyear(StartTime)
+| order by year 
