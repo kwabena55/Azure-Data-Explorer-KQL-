@@ -74,3 +74,6 @@ StormEvents
 StormEvents
 |summarize DamageProp=sum(DamageProperty), DamageProp_ratio= sum(DamageProperty)/count() by month=monthofyear(StartTime)
 | order by month asc 
+
+
+// Group by Year
