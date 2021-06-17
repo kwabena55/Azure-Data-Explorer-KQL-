@@ -29,6 +29,7 @@ StormEvents
 | limit 10
 
 // Some Alias
-
+StormEvents
+| project Damage=DamageProperty,Death=DeathsDirect, Stat=State
 
 
