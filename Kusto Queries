@@ -33,3 +33,24 @@ StormEvents
 | project Damage=DamageProperty,Death=DeathsDirect, Stat=State
 
 
+// Make some queries case insensitive using the ~ 
+StormEvents
+| where State =~"mississippi"  // ~ is so cool
+
+
+// Show table Schema
+
+StormEvents
+| getschema 
+
+
+// Group by: Sum of Damage property by DamageProperty
+// Remember summarize is the same as Group by so we need to group by a field and just specify the aggregrate
+StormEvents
+|limit 10000
+
+StormEvents
+| summarize DamageProp=sum(DamageProperty) by State
+
+
+
