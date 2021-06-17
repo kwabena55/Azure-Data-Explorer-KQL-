@@ -1,0 +1,34 @@
+StormEvents
+| limit 1000
+
+// Count rows in the StormEvents Table
+StormEvents
+| count
+
+// Display selected columns in the StormEvents Table
+StormEvents
+| project EndTime,EpisodeId
+
+// Filtering
+StormEvents
+| where EpisodeId > 2560
+
+// Use of Distinct
+StormEvents
+| distinct State
+
+// Use Distinct Count
+
+StormEvents
+| distinct State
+| count
+
+// select some columns
+StormEvents
+| project DamageProperty,DeathsDirect,State
+| limit 10
+
+// Some Alias
+
+
+
