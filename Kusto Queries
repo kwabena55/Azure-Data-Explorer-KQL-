@@ -25,7 +25,7 @@ StormEvents
 
 // select some columns
 StormEvents
-| project DamageProperty,DeathsDirect,State
+| project DamageProperty,DeathsDirect,State,EventId
 | limit 10
 
 // Some Alias
