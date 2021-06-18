@@ -214,4 +214,21 @@ let NewTab=MyFunction1()
 | where EventId == 7821 ;
 NewTab
 | join kind = inner StormEvents on $left.EventId ==$right.EventId
+
+
+let Addition = (arg1:long,arg2:long) {arg1 + arg2};
+print(Addition(4,5))
  
+
+
+//
+let Statement= (arg1:string,arg2:string,arg3:string){let enddate=StormEvents 
+|limit 1000
+|distinct EndTime ;
+enddate
+|join  StormEvents on $left.EndTime ==$right.EndTime
+|where State in ( arg1,arg2,arg3)
+|project State,DamageProperty
+|order by DamageProperty desc
+|render barchart} ;
+Statement("NEW YORK","VIRGINIA","CALIFORNIA")
