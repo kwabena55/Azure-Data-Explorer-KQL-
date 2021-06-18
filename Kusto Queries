@@ -128,6 +128,13 @@ StateCodes
 
 
 
+// specifit the kind of Join
+let StateCodes= StormEvents
+| distinct State;  // Always terminate the variable with a semicolon
+StateCodes
+| join kind=inner  StormEvents on  $left.State == $right.State
+
+
 // right table will always have a suffix of 1 in its columns
 let Enddate= StormEvents | distinct(EndTime);
 Enddate
@@ -135,6 +142,17 @@ Enddate
 | where State in ( "NEW YORK","VIRGINIA","CALIFORNIA")
 |extend TotalDamage=DamageCrops+ DamageProperty
 | project  EventId,TotalDamage,DeathsDirect,DeathsIndirect,DamageCrops,DamageProperty
+
+
+// Visualization
+let enddate=StormEvents 
+|limit 1000
+|distinct EndTime ;
+enddate
+|join  StormEvents on $left.EndTime ==$right.EndTime
+|where State in ( "NEW YORK","VIRGINIA","CALIFORNIA")
+|project State,DamageProperty
+|render barchart 
 
 
 
