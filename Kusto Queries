@@ -171,4 +171,47 @@ MyFunction2(myLimit:long) {     StormEvents     | limit myLimit }
 MyFunction2(20)
 
 
+// Function Calling Another Function
+.create-or-alter function with (folder = "Demo", docstring = "Function calling other function", skipvalidation = "true")
+MyFunction3() {     MyFunction(100) } 
 
+MyFunction3()
+
+
+
+.create-or-alter function with (folder = "Demo", docstring = "Function calling other function", skipvalidation = "true") 
+MyFunction4() {
+    let limitVar = 100;
+    let result = MyFunction(limitVar);
+    result
+} 
+
+MyFunction4()
+
+
+// Customised Functions-- Write a function to print Damage reports from the passes States
+.create-or-alter function with ( folder="Demo",docstring="Customised Functions", skipvalidation="true")
+MyFunction4 ()
+{let enddate=StormEvents 
+|limit 1000
+|distinct EndTime ;
+enddate
+|join  StormEvents on $left.EndTime ==$right.EndTime
+|where State in ( "NEW YORK","VIRGINIA","CALIFORNIA")
+|project State,DamageProperty
+|order by DamageProperty desc
+|render barchart 
+}
+
+
+.create-or-alter function with (folder = "Demo", docstring = "Demo function with parameter", skipvalidation = "true") 
+MyFunction5(myLimit:long) {StormEvents | limit myLimit}
+
+
+// All operations on table can be done using Functions too ( Here I Joined trhe Functions to the Storm Events Table)
+let NewTab=MyFunction1()
+| project EventId, EndTime
+| where EventId == 7821 ;
+NewTab
+| join kind = inner StormEvents on $left.EventId ==$right.EventId
+ 
