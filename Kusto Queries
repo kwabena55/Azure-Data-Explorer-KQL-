@@ -140,8 +140,8 @@ let Enddate= StormEvents | distinct(EndTime);
 Enddate
 | join StormEvents on $left.EndTime == $right.EndTime
 | where State in ( "NEW YORK","VIRGINIA","CALIFORNIA")
-|extend TotalDamage=DamageCrops+ DamageProperty
-| project  EventId,TotalDamage,DeathsDirect,DeathsIndirect,DamageCrops,DamageProperty
+|extend TotalDamage=DamageCrops+ DamageProperty, totaltest=DamageCrops*2
+| project  EventId,TotalDamage,DeathsDirect,DeathsIndirect,DamageCrops,DamageProperty,totaltest
 
 
 // Visualization
@@ -152,11 +152,23 @@ enddate
 |join  StormEvents on $left.EndTime ==$right.EndTime
 |where State in ( "NEW YORK","VIRGINIA","CALIFORNIA")
 |project State,DamageProperty
+|order by DamageProperty desc
 |render barchart 
 
+// Creating a Function
+.create-or-alter function with ( folder="Demo", docstring="Simple Demo function",skipvalidation="true")
+MyFunction9() { StormEvents |limit 1000 }
+
+MyFunction1()
 
 
 
+
+// Function s take s a parameter
+.create-or-alter function with (folder = "Demo", docstring = "Demo function with parameter", skipvalidation = "true")
+MyFunction2(myLimit:long) {     StormEvents     | limit myLimit } 
+
+MyFunction2(20)
 
 
 
