@@ -221,7 +221,7 @@ print(Addition(4,5))
  
 
 
-//
+//Use a variable to dynamically print out a chart
 let Statement= (arg1:string,arg2:string,arg3:string){let enddate=StormEvents 
 |limit 1000
 |distinct EndTime ;
@@ -232,3 +232,33 @@ enddate
 |order by DamageProperty desc
 |render barchart} ;
 Statement("NEW YORK","VIRGINIA","CALIFORNIA")
+
+
+// Very similar to how a python function is
+// def <name> ( arguments) 
+// let <name of variable> = ( <define your arguments and state the data type>) { put your KQL query here and replace with the args you passed};
+
+
+
+
+
+// Another Example
+StormEvents
+| where State  contains "SA"
+| summarize  TotalDamage=sum(DamageCrops + DamageProperty) by State
+
+
+// Pass a dynamic arguments for the State
+
+let ContainStatement= (arg1:string) {StormEvents
+| where State  contains arg1
+| summarize  TotalDamage=sum(DamageCrops + DamageProperty) by State};
+ContainStatement("SA")  // Testing
+
+
+let ContainStatement= (arg1:string) {StormEvents
+| where State  contains arg1
+| summarize  TotalDamage=sum(DamageCrops + DamageProperty) by State
+| render barchart};
+ContainStatement("OR")
+
