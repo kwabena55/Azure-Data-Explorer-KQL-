@@ -111,7 +111,13 @@ StormEvents
 
 StormEvents
 | where State  contains "SA"
-| summarize  TotalDamage=(DamageCrops + DamageProperty) by State  // Cant work bcos susmmarize need one aggregrate function
+| summarize  TotalDamage=(DamageCrops + DamageProperty) by State  // Cant work bcos susmmarize need one aggregrate functionclear
+
+
+StormEvents
+| where State contains  "SA"
+| extend TotalDamage=DamageCrops+ DamageProperty  // calculated Column
+|project EventId,StartTime,TotalDamage
 
 
 
