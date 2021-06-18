@@ -120,9 +120,18 @@ StormEvents
 |project EventId,StartTime,TotalDamage
 
 
+// Join Example-- Because tables are not related, lets create a temp table so we can join( leverage variables)
+let StateCodes= StormEvents
+| distinct State;  // Always terminate the variable with a semicolon
+StateCodes
+| join StormEvents on  $left.State == $right.State
 
 
 
+//
+let Enddate= StormEvents | distinct(EndTime);
+Enddate
+| join StormEvents on $left.EndTime == $right.EndTime
 
 
 
