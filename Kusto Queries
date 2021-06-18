@@ -273,3 +273,27 @@ ContainStatement("OR")
 StormEvents
 | limit 10 
 | order by EndTime desc
+
+StormEvents
+| sort by EndTime desc
+| limit 10 
+
+
+StormEvents
+| sort by EndTime desc
+| top 10 
+
+
+// Question 2-- Active cases and order in descending order
+Covid19
+| order by Active desc
+
+
+// Question 3 -- Country of countries in the dataset
+Covid19
+| summarize CountryCount= count(Country) by Country
+
+
+// Question 4
+
+
