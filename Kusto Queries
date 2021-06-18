@@ -262,3 +262,14 @@ let ContainStatement= (arg1:string) {StormEvents
 | render barchart};
 ContainStatement("OR")
 
+
+// Show more description about my functions
+.show function MyFunction1
+
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Question number 1
+StormEvents
+| limit 10 
+| order by EndTime desc
