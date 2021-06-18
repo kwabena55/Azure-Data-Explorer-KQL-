@@ -128,12 +128,13 @@ StateCodes
 
 
 
-//
+// right table will always have a suffix of 1 in its columns
 let Enddate= StormEvents | distinct(EndTime);
 Enddate
 | join StormEvents on $left.EndTime == $right.EndTime
-
-
+| where State in ( "NEW YORK","VIRGINIA","CALIFORNIA")
+|extend TotalDamage=DamageCrops+ DamageProperty
+| project  EventId,TotalDamage,DeathsDirect,DeathsIndirect,DamageCrops,DamageProperty
 
 
 
