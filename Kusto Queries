@@ -85,3 +85,40 @@ StormEvents
 StormEvents
 | summarize DamageProp=sum(DamageProperty), DamageProp_ratio= sum(DamageProperty)/count() by week=startofweek(StartTime)
 | sort by endofmonth(week,1)
+
+
+
+// Group by multiple columns
+StormEvents
+|summarize avg_deaths= avg(DamageProperty) by State,MonthStart=startofmonth(todatetime(StartTime))
+
+
+StormEvents
+|where State in ("OHIO","HAWAII")
+|summarize avg_deaths= avg(DamageProperty) by State,MonthStart=startofmonth(todatetime(StartTime))
+
+// Total Cases ( Damage Property)
+
+StormEvents
+| summarize DamCrop=sum(DamageCrops) by State
+
+
+// Calculated Column ( we use extend)
+
+StormEvents
+| where State contains  "SA"
+| extend TotalDamage=DamageCrops+ DamageProperty  // calculated Column
+
+
+
+
+
+
+
+
+
+
+
+
+
+
