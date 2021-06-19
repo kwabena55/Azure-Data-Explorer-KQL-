@@ -302,3 +302,26 @@ Covid19
 | distinct Country
 
 
+// Disitnct statenames of Japan I Desc. Order
+Covid19
+| where State == "Japan"
+|order by State desc 
+
+// Active cases sum in Japan and India
+Covid19
+| where Country in ("Japan","India")
+| summarize TotalActive=sum(Active), TotalRecovered= sum(Recovered) by Country
+
+// Show the Acitve, recovered cases of India, USA and Japan
+Covid19
+| where Country in ("Japan","India","USA")
+| summarize sum(Active),sum(Recovered) by Country
+
+Covid19
+| where Country in ("Japan","India","USA")
+| project Active,Recovered,Country 
+| order by Country desc
+
+// Maximum number of deaths country wise
+Covid19
+| 
