@@ -345,8 +345,21 @@ Covid19
 Covid19
 | summarize AcerageRec=avg(Recovered) by Country
 
+Covid19
+| summarize AcerageRec=toint(avg(Recovered)) by Country
 
 
+Covid19
+| summarize AcerageRec=round(avg(Recovered)) by Country
+
+
+// Count of States in Each Country
+Covid19
+| summarize No_of_States=dcount(State) by Country  // use dcount because count() doesnt take any arguments
+
+//   States in Each Country with Maximum Death
+Covid19
+| summarize Statee= arg_max(Deaths,State) by Country  // Similar to python 
 
 
 
