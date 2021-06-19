@@ -324,4 +324,39 @@ Covid19
 
 // Maximum number of deaths country wise
 Covid19
-| 
+| summarize max(Deaths) by Country
+
+// Minimum number of deaths country wise
+Covid19
+| summarize min(Deaths) by Country
+
+
+// 
+Covid19
+| where Country == "India"
+| where Timestamp == todatetime("20200131")
+
+//oe
+
+Covid19
+| where Country == "India" and Timestamp == todatetime("20200131")
+
+// Average recovered by Country
+Covid19
+| summarize AcerageRec=avg(Recovered) by Country
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
