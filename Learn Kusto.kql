@@ -1,0 +1,367 @@
+StormEvents
+| limit 1000
+
+// Count rows in the StormEvents Table
+StormEvents
+| count
+
+// Display selected columns in the StormEvents Table
+StormEvents
+| project EndTime,EpisodeId
+
+// Filtering
+StormEvents
+| where EpisodeId > 2560
+
+// Use of Distinct
+StormEvents
+| distinct State
+
+// Use Distinct Count
+
+StormEvents
+| distinct State
+| count
+
+// select some columns
+StormEvents
+| project DamageProperty,DeathsDirect,State,EventId
+| limit 10
+
+// Some Alias
+StormEvents
+| project Damage=DamageProperty,Death=DeathsDirect, Stat=State
+
+
+// Make some queries case insensitive using the ~
+StormEvents
+| where State =~"mississippi"  // ~ is so cool
+
+
+// Show table Schema
+
+StormEvents
+| getschema
+
+
+// Group by: Sum of Damage property by DamageProperty
+// Remember summarize is the same as Group by so we need to group by a field and just specify the aggregrate
+StormEvents
+|limit 10000
+
+StormEvents
+| summarize DamageProp=sum(DamageProperty),Crops=sum(DamageCrops) by State
+
+
+//  Grooup by State and Show the sum of Damage Properties and Eventid
+StormEvents
+| summarize DamageProp=sum(DamageProperty),Crops=sum(DamageCrops), count_Instances=count() by State
+
+StormEvents
+| summarize DamageProp=sum(DamageProperty),Crops=sum(DamageCrops), count_Instances=count() by State
+| where count_Instances >=2000
+
+StormEvents
+| summarize DamageProp=sum(DamageProperty),Crops=sum(DamageCrops), count_Instances=count() by State
+|where count_Instances <2000
+
+// Calculated Column
+StormEvents
+| summarize DamageProp=sum(DamageProperty), DamageProp_ratio= sum(DamageProperty)/count() by State
+
+
+// Group by Date
+StormEvents
+|summarize DamageProp=sum(DamageProperty), DamageProp_ratio= sum(DamageProperty)/count() by month=monthofyear(StartTime)
+| order by month asc
+
+
+// Group by Year
+StormEvents
+|summarize DamageProp=sum(DamageProperty), DamageProp_ratio= sum(DamageProperty)/count() by year=getyear(StartTime)
+| order by year
+
+//Group by Year
+StormEvents
+| summarize DamageProp=sum(DamageProperty), DamageProp_ratio= sum(DamageProperty)/count() by week=startofweek(StartTime)
+| sort by endofmonth(week,1)
+
+
+
+// Group by multiple columns
+StormEvents
+|summarize avg_deaths= avg(DamageProperty) by State,MonthStart=startofmonth(todatetime(StartTime))
+
+
+StormEvents
+|where State in ("OHIO","HAWAII")
+|summarize avg_deaths= avg(DamageProperty) by State,MonthStart=startofmonth(todatetime(StartTime))
+
+// Total Cases ( Damage Property)
+
+StormEvents
+| summarize DamCrop=sum(DamageCrops) by State
+
+
+// Calculated Column ( we use extend)
+
+StormEvents
+| where State contains  "SA"
+| extend TotalDamage=DamageCrops+ DamageProperty  // calculated Column
+
+StormEvents
+| where State  contains "SA"
+| summarize  TotalDamage=(DamageCrops + DamageProperty) by State  // Cant work bcos susmmarize need one aggregrate functionclear
+
+
+StormEvents
+| where State contains  "SA"
+| extend TotalDamage=DamageCrops+ DamageProperty  // calculated Column
+|project EventId,StartTime,TotalDamage
+
+
+// Join Example-- Because tables are not related, lets create a temp table so we can join( leverage variables)
+let StateCodes= StormEvents
+| distinct State;  // Always terminate the variable with a semicolon
+StateCodes
+| join StormEvents on  $left.State == $right.State
+
+
+
+// specifit the kind of Join
+let StateCodes= StormEvents
+| distinct State;  // Always terminate the variable with a semicolon
+StateCodes
+| join kind=inner  StormEvents on  $left.State == $right.State
+
+
+// right table will always have a suffix of 1 in its columns
+let Enddate= StormEvents | distinct(EndTime);
+Enddate
+| join StormEvents on $left.EndTime == $right.EndTime
+| where State in ( "NEW YORK","VIRGINIA","CALIFORNIA")
+|extend TotalDamage=DamageCrops+ DamageProperty, totaltest=DamageCrops*2
+| project  EventId,TotalDamage,DeathsDirect,DeathsIndirect,DamageCrops,DamageProperty,totaltest
+
+
+// Visualization
+let enddate=StormEvents
+|limit 1000
+|distinct EndTime ;
+enddate
+|join  StormEvents on $left.EndTime ==$right.EndTime
+|where State in ( "NEW YORK","VIRGINIA","CALIFORNIA")
+|project State,DamageProperty
+|order by DamageProperty desc
+|render barchart
+
+// Creating a Function
+.create-or-alter function with ( folder="Demo", docstring="Simple Demo function",skipvalidation="true")
+MyFunction9() { StormEvents |limit 1000 }
+
+MyFunction1()
+
+
+
+
+// Function s take s a parameter
+.create-or-alter function with (folder = "Demo", docstring = "Demo function with parameter", skipvalidation = "true")
+MyFunction2(myLimit:long) {     StormEvents     | limit myLimit }
+
+MyFunction2(20)
+
+
+// Function Calling Another Function
+.create-or-alter function with (folder = "Demo", docstring = "Function calling other function", skipvalidation = "true")
+MyFunction3() {     MyFunction(100) }
+
+MyFunction3()
+
+
+
+.create-or-alter function with (folder = "Demo", docstring = "Function calling other function", skipvalidation = "true")
+MyFunction4() {
+    let limitVar = 100;
+    let result = MyFunction(limitVar);
+    result
+}
+
+MyFunction4()
+
+
+// Customised Functions-- Write a function to print Damage reports from the passes States
+.create-or-alter function with ( folder="Demo",docstring="Customised Functions", skipvalidation="true")
+MyFunction4 ()
+{let enddate=StormEvents
+|limit 1000
+|distinct EndTime ;
+enddate
+|join  StormEvents on $left.EndTime ==$right.EndTime
+|where State in ( "NEW YORK","VIRGINIA","CALIFORNIA")
+|project State,DamageProperty
+|order by DamageProperty desc
+|render barchart
+}
+
+
+.create-or-alter function with (folder = "Demo", docstring = "Demo function with parameter", skipvalidation = "true")
+MyFunction5(myLimit:long) {StormEvents | limit myLimit}
+
+
+// All operations on table can be done using Functions too ( Here I Joined trhe Functions to the Storm Events Table)
+let NewTab=MyFunction1()
+| project EventId, EndTime
+| where EventId == 7821 ;
+NewTab
+| join kind = inner StormEvents on $left.EventId ==$right.EventId
+
+
+let Addition = (arg1:long,arg2:long) {arg1 + arg2};
+print(Addition(4,5))
+
+
+
+//Use a variable to dynamically print out a chart
+let Statement= (arg1:string,arg2:string,arg3:string){let enddate=StormEvents
+|limit 1000
+|distinct EndTime ;
+enddate
+|join  StormEvents on $left.EndTime ==$right.EndTime
+|where State in ( arg1,arg2,arg3)
+|project State,DamageProperty
+|order by DamageProperty desc
+|render barchart} ;
+Statement("NEW YORK","VIRGINIA","CALIFORNIA")
+
+
+// Very similar to how a python function is
+// def <name> ( arguments)
+// let <name of variable> = ( <define your arguments and state the data type>) { put your KQL query here and replace with the args you passed};
+
+
+
+
+
+// Another Example
+StormEvents
+| where State  contains "SA"
+| summarize  TotalDamage=sum(DamageCrops + DamageProperty) by State
+
+
+// Pass a dynamic arguments for the State
+
+let ContainStatement= (arg1:string) {StormEvents
+| where State  contains arg1
+| summarize  TotalDamage=sum(DamageCrops + DamageProperty) by State};
+ContainStatement("SA")  // Testing
+
+
+let ContainStatement= (arg1:string) {StormEvents
+| where State  contains arg1
+| summarize  TotalDamage=sum(DamageCrops + DamageProperty) by State
+| render barchart};
+ContainStatement("OR")
+
+
+// Show more description about my functions
+.show function MyFunction1
+
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Question number 1
+StormEvents
+| limit 10
+| order by EndTime desc
+
+StormEvents
+| sort by EndTime desc
+| limit 10
+
+
+StormEvents
+| sort by EndTime desc
+| top 10
+
+
+// Question 2-- Active cases and order in descending order
+Covid19
+| order by Active desc
+
+
+// Question 3 -- Count of countries in the dataset
+Covid19
+| summarize CountryCount= count(Country) by Country
+
+Covid19
+| summarize No_of_countries= dcount(Country)  // distinct count of countries
+
+
+// Question 4
+Covid19
+| distinct Country
+
+
+// Disitnct statenames of Japan I Desc. Order
+Covid19
+| where State == "Japan"
+|order by State desc
+
+// Active cases sum in Japan and India
+Covid19
+| where Country in ("Japan","India")
+| summarize TotalActive=sum(Active), TotalRecovered= sum(Recovered) by Country
+
+// Show the Acitve, recovered cases of India, USA and Japan
+Covid19
+| where Country in ("Japan","India","USA")
+| summarize sum(Active),sum(Recovered) by Country
+
+Covid19
+| where Country in ("Japan","India","USA")
+| project Active,Recovered,Country
+| order by Country desc
+
+// Maximum number of deaths country wise
+Covid19
+| summarize max(Deaths) by Country
+
+// Minimum number of deaths country wise
+Covid19
+| summarize min(Deaths) by Country
+
+
+//
+Covid19
+| where Country == "India"
+| where Timestamp == todatetime("20200131")
+
+//oe
+
+Covid19
+| where Country == "India" and Timestamp == todatetime("20200131")
+
+// Average recovered by Country
+Covid19
+| summarize AcerageRec=avg(Recovered) by Country
+
+Covid19
+| summarize AcerageRec=toint(avg(Recovered)) by Country
+
+
+Covid19
+| summarize AcerageRec=round(avg(Recovered)) by Country
+
+
+// Count of States in Each Country
+Covid19
+| summarize No_of_States=dcount(State) by Country  // use dcount because count() doesnt take any arguments
+
+//   States in Each Country with Maximum Death
+Covid19
+| summarize Statee= arg_max(Deaths, State) by Country  // Similar to python
+
+
+
+
+
