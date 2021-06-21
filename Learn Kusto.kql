@@ -362,6 +362,51 @@ Covid19
 | summarize Statee= arg_max(Deaths, State) by Country  // Similar to python
 
 
+// COuntries with most cases between 1 april 2020 and 2 may 2020
+Covid19
+| where Timestamp between (todatetime("20200401")..todatetime("20200502"))
+| summarize max(Deaths) by Country
+
+//   Show the no. of Totla Covid Cases month wise with column name Total Cases for Japan
+Covid19
+| where Country == "Japan"
+| summarize TotalCases=sum(Active) by Month=monthofyear(todatetime(Timestamp)),Country
+
+Covid19
+| where Country == "Japan"
+| extend TotalCases=Active+Recovered+Deaths+Confirmed
+| summarize TotalCases=sum(Active) by Month=monthofyear(todatetime(Timestamp)),Country
+
+
+// Create a temp table with COuntryCodde, join with Covid19 table and show country and Recovered.
+let Temptable=Covid19 |  distinct CountryCode;
+ Covid19
+| join kind=inner Covid19 on $left.CountryCode ==$right.CountryCode
+
+
+// Write and adhoc function to substract two integers
+let subtract=(arg:int,arg1:int) {arg-arg1}
+
+
+// write and adhoc function  that takes Country Name as a parameter and return total no of recovered cases for same.
+.create-or-alter function with (folder = "Demo", docstring = "Demo function with parameter", skipvalidation = "true")
+MyFunction56(code:string) {Covid19 | summarize sum(Recovered) by  code}
+
+
+//
+let Functionn1=(countrycode:string,code:string ) {Covid19|summarize sum(Recovered) by code | where countrycode == code}
+
+// Testing with Table that has Data
+let Functionn1=(countrycode:string,code:string ) {StormEvents | where countrycode == code|summarize sum(DeathsDirect) by countrycode };
+Functionn1("NEW YORK","NEW YORK")
+
+
+// Write a function that takes the date range, country code as parameters and returns total no. of active cases for thr same
+let myfunc= (datetime1:datetime,datetime2:datetime,countrycode:string,country:string) {
+Covid19
+| where todatetime(Timestamp) between (todatetime(datetime1)..todatetime(datetime2)) and   CountryCode == countrycode  and Country == country 
+| summarize sum(Active) by CountryCode
+}
 
 
 
