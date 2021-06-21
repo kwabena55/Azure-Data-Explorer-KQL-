@@ -402,11 +402,14 @@ Functionn1("NEW YORK","NEW YORK")
 
 
 // Write a function that takes the date range, country code as parameters and returns total no. of active cases for thr same
-let myfunc= (datetime1:datetime,datetime2:datetime,countrycode:string,country:string) {
-Covid19
-| where todatetime(Timestamp) between (todatetime(datetime1)..todatetime(datetime2)) and   CountryCode == countrycode  and Country == country 
-| summarize sum(Active) by CountryCode
-}
+let myfunc= (datetime1: datetime, datetime2: datetime, countrycode: string, country: string) {
+    Covid19
+    | where todatetime(Timestamp) between (todatetime(datetime1)..todatetime(datetime2)) and CountryCode == countrycode and Country == country 
+    | summarize sum(Active) by CountryCode
+};
+myfunc(todatetime("20200401"),todatetime("20200502"),"IN","India")
+
+
 
 
 
