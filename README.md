@@ -1,2 +1,2 @@
 # Azure-Data-Explorer-KQL-
-ADX for big Data analytics,streaming and Low Ingestion of Data over Petabytes of Data
+ADX for big Data analytics,streaming and Low Latency Ingestion of Data over Petabytes of Data
